@@ -5,7 +5,7 @@ const UseRefExercise = () => {
     const handleResize = (e) => {
         divRef.current.style.height = "80px";
         divRef.current.style.width = "150px";
-        divRef.current.innerText = "321";
+        divRef.current.innerText = "text";
     };
 
     return (

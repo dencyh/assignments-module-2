@@ -1,8 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import CardWrapper from "../../common/Card";
 import SmallTitle from "../../common/typografy/smallTitle";
 
-const validateCallback = (data) => {
+const validateWithCallback = (data) => {
+    console.log(data);
+};
+
+const validateWithoutCallback = (data) => {
     console.log(data);
 };
 
@@ -14,13 +18,6 @@ const UseCallBackExample = () => {
     const handleChange = ({ name, value }) => {
         setData((prev) => ({ ...prev, [name]: value }));
     };
-    const validateWithoutCallback = (data) => {
-        console.log(data);
-    };
-
-    // const validateCallback = useCallback((data) => {
-    //     console.log(data);
-    // }, []);
 
     useEffect(() => {
         withoutCallback.current++;
@@ -28,11 +25,11 @@ const UseCallBackExample = () => {
 
     useEffect(() => {
         withCallback.current++;
-    }, [validateCallback]);
+    }, [validateWithCallback]);
 
     useEffect(() => {
         validateWithoutCallback(data);
-        validateCallback(data);
+        validateWithCallback(data);
     }, [data]);
     return (
         <CardWrapper>
