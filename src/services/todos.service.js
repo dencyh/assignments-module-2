@@ -6,8 +6,15 @@ export const todosService = {
     const { data } = await httpService.get(endpoint, {
       params: {
         _page: 1,
-        _limit: 10,
+        _limit: 5,
       },
+    });
+    return data;
+  },
+  create: async () => {
+    const { data } = await httpService.post(endpoint, {
+      title: "New Task",
+      completed: false,
     });
     return data;
   },

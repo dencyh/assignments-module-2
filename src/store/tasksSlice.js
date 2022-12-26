@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, nanoid } from "@reduxjs/toolkit";
 import { todosService } from "../services/todos.service";
 import { setError } from "./errorsSlice";
 
@@ -11,19 +11,37 @@ export const getTasks = () => async (dispatch) => {
   dispatch(taskRequested());
   try {
     const data = await todosService.fetch();
-    dispatch(acquired(data));
+    dispatch(received(data));
   } catch (e) {
     dispatch(taskRequestFailed());
     dispatch(setError(e.message));
   }
 };
 
+export const createTask =
+  ({ title, completed }) =>
+  async (dispatch) => {
+    dispatch(taskRequested());
+    try {
+      const data = await todosService.create({ title, completed });
+      dispatch(addOne(data));
+    } catch (e) {
+      dispatch(taskRequestFailed());
+      dispatch(setError(e.message));
+    }
+  };
+
 export const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
-    acquired(state, action) {
+    received(state, action) {
       state.tasks = action.payload;
+      state.isLoading = false;
+    },
+    addOne(state, action) {
+      state.tasks.unshift({ ...action.payload, id: nanoid() });
+
       state.isLoading = false;
     },
     complete(state, action) {
@@ -55,10 +73,11 @@ export const taskSlice = createSlice({
 });
 
 export const {
+  received,
+  addOne,
   complete,
   update,
   remove,
-  acquired,
   taskRequested,
   taskRequestFailed,
 } = taskSlice.actions;
