@@ -1,41 +1,57 @@
 import { useEffect, useState } from "react";
-import * as actions from "./store/actions";
-import { initStore } from "./store/store";
-
-const store = initStore();
+import {
+  complete,
+  getTasks,
+  remove,
+  selectAllTasks,
+  selectLoadingTasks,
+  update,
+} from "./store/tasksSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 function App() {
-  const [state, setState] = useState(store.getState());
+  const dispatch = useDispatch();
+
+  const data = useSelector(selectAllTasks);
+  const isLoading = useSelector(selectLoadingTasks);
+  const error = useSelector((state) => state.errors.errors[0]);
 
   const [title, setTitle] = useState("");
   const [taskInput, setTaskInput] = useState("");
 
   useEffect(() => {
-    store.subscribe(() => {
-      setState(store.getState());
-      // console.log(store.getState());
-    });
-  }, []);
+    dispatch(getTasks());
+  }, [dispatch]);
 
   const completeTask = (id) => {
-    store.dispatch(actions.taskCompleted(id));
+    dispatch(() => {
+      dispatch(complete(id));
+    });
   };
 
   const updateTitle = (id, title) => {
-    store.dispatch(actions.titleUpdated({ id, title }));
+    dispatch(update({ id, title }));
     setTaskInput("");
   };
 
   const removeTask = (id) => {
-    store.dispatch(actions.taskRemoved(id));
+    dispatch(remove(id));
   };
+
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (error) {
+    return <h2>{error}</h2>;
+  }
 
   return (
     <div className="container">
       <h1 className="mt-5 mb-3">Task manager</h1>
 
       <ul className="list-group">
-        {state.map((task) => (
+        {data.map((task) => (
           <li key={task.id} className="list-group-item py-4">
             <div className="d-flex flex-column align-items-start">
               <div className="d-flex gap-2">
