@@ -1,5 +1,12 @@
 import "./App.css";
-import { NavLink, Redirect, Route, Switch, useParams } from "react-router-dom";
+import {
+  Navigate,
+  NavLink,
+  Outlet,
+  Route,
+  Routes,
+  useParams,
+} from "react-router-dom";
 
 const listStyle = { display: "flex", flexFlow: "column", gap: "8px" };
 
@@ -17,12 +24,7 @@ const UsersLayout = () => (
   <div>
     <h1>Users Layout</h1>
     <NavLink to="/">Main Page</NavLink>
-    <Switch>
-      <Route exact path="/users" component={UsersListPage} />
-      <Route exact path="/users/:id/profile" component={UserPage} />
-      <Route exact path="/users/:id/edit" component={UserEditPage} />
-      <Redirect from={"/users/:id"} to={"/users/:id/profile"} />
-    </Switch>
+    <Outlet />
   </div>
 );
 
@@ -74,11 +76,15 @@ function App() {
     <div className="App">
       <h1>App Layout</h1>
       <NavLink to="/users">Users list page</NavLink>
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route path="/users/" component={UsersLayout} />
-        <Redirect from="*" to="/" />
-      </Switch>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="users" element={<UsersLayout />}>
+          <Route path=":id/edit" element={<UserEditPage />} />
+          <Route path=":id/profile" element={<UserPage />} />
+          <Route path="" element={<UsersListPage />} />
+          <Route path=":id" element={<Navigate to="profile" />} />
+        </Route>
+      </Routes>
     </div>
   );
 }
