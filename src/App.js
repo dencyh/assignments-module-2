@@ -1,11 +1,18 @@
 import "./App.css";
-import { NavLink, Redirect, Route, Switch, useParams } from "react-router-dom";
+import {
+  Navigate,
+  NavLink,
+  Outlet,
+  Route,
+  Routes,
+  useParams,
+} from "react-router-dom";
 
 const listStyle = { display: "flex", flexFlow: "column", gap: "8px" };
 
 const users = Array(5)
   .fill(0)
-  .map((item, index) => ({ id: index, name: "User " + index }));
+  .map((_, index) => ({ id: index, name: "User " + index }));
 
 const HomePage = () => (
   <>
@@ -17,12 +24,7 @@ const UsersLayout = () => (
   <div>
     <h1>Users Layout</h1>
     <NavLink to="/">Main Page</NavLink>
-    <Switch>
-      <Route path="/users/:id/edit" component={UserEditPage} />
-      <Route path="/users/:id" component={UserPage} />
-      <Route path="/users" exact component={UsersListPage} />
-      <Redirect from={"/users/:id"} to={"/users/:id/"} />
-    </Switch>
+    <Outlet />
   </div>
 );
 
@@ -31,7 +33,7 @@ const UsersListPage = () => (
     <h1>Users list page</h1>
     <div style={listStyle}>
       {users.map((user) => (
-        <NavLink key={user.id} to={`/users/${user.id}`}>
+        <NavLink key={user.id} to={`/users/${user.id}/profile`}>
           {user.name}
         </NavLink>
       ))}
@@ -59,8 +61,10 @@ const UserEditPage = () => {
     <>
       <h1>Edit User Page</h1>
       <nav style={listStyle}>
-        <NavLink to={`/user/${id}`}>User Page</NavLink>
-        <NavLink to={`/user/${id + 1}`}>Another User Page</NavLink>
+        <NavLink to={`/users/${id}/profile`}>User Page</NavLink>
+        <NavLink to={`/users/${Number(id) + 1}/profile`}>
+          Another User Page
+        </NavLink>
         <NavLink to="/users">User List</NavLink>
       </nav>
     </>
@@ -72,11 +76,15 @@ function App() {
     <div className="App">
       <h1>App Layout</h1>
       <NavLink to="/users">Users list page</NavLink>
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route path="/users/" component={UsersLayout} />
-        <Redirect from="*" to="/" />
-      </Switch>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="users" element={<UsersLayout />}>
+          <Route path=":id/edit" element={<UserEditPage />} />
+          <Route path=":id/profile" element={<UserPage />} />
+          <Route path="" element={<UsersListPage />} />
+          <Route path=":id" element={<Navigate to="profile" />} />
+        </Route>
+      </Routes>
     </div>
   );
 }
