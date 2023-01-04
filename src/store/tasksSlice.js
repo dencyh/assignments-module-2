@@ -61,7 +61,9 @@ export const taskSlice = createSlice({
         );
     },
     remove(state, action) {
-      return state.slice(0).filter((task) => task.id !== action.payload);
+      state.tasks = state.tasks
+        .slice(0)
+        .filter((task) => task.id !== action.payload);
     },
     taskRequested(state) {
       state.isLoading = true;
